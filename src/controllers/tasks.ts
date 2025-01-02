@@ -27,7 +27,8 @@ export class TaskControllers {
     try {
       console.log("1234567");
       const userId = (req as any)?.user?.id;
-      const result = await TaskServices.fetchTaskByUser(userId);
+      const filters = req.query;
+      const result = await TaskServices.fetchTaskByUser(userId,filters);
       console.log(result);
       return res.status(result.code).json(result);
     } catch (error) {

@@ -45,8 +45,7 @@ export class TaskServices{
    }
     
  };
- static async fetchTaskByUser(userId:string):Promise<any>{
-    console.log('1234567890')
+ static async fetchTaskByUser(userId:string,filters:any):Promise<any>{
     const checkIfUserExist= await pool.query(taskQueries.checkUserExistence,[userId])
     console.log(checkIfUserExist)
     if(checkIfUserExist.rows.length === 0) {
@@ -56,13 +55,39 @@ export class TaskServices{
             message: "userId does not exist",
         };
     }
-    const fetch=(await pool.query(taskQueries.fetchAllTasksByUser,[userId])).rows
-    console.log(fetch)
-    return{
-        status: "success",
+    let query = taskQueries.fetchAllTasksByUser ;
+    const values: any[] = [userId];
+
+    if (filters.priority) {
+      query += ` AND priority = $${values.length + 1}`;
+      values.push(filters.priority);
+    }
+
+    if (filters.completed) {
+      query += ` AND completed = $${values.length + 1}`;
+      values.push(filters.completed);
+    }
+    if (filters.search) {
+      query += ` AND (task ILIKE $${values.length + 1} OR userId::text ILIKE $${
+        values.length + 1
+      })`;
+      values.push(`%${filters.search}%`);
+    }
+    
+    const data: Task[] = (await pool.query(query, values)).rows;
+    if (!data || data.length===0){
+      throw{
+        status: "error",
+        message: "no tasks to fetch",
+        code: 404,
+        data:null
+      }
+    }else
+    return {
+      status: "success",
       message: "Tasks fetched successfully",
-      code: 201,
-      data:fetch
+      code: 200,
+      data,
     }
  }
  static async deleteTask(id:string,userId:string):Promise<any>{

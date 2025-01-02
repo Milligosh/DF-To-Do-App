@@ -37,10 +37,29 @@ router.post("/newTask", authenticateToken, TaskControllers.createTask);
  * @swagger
  * /tasks/allTasks:
  *   get:
- *     summary: Fetch all tasks for the authenticated user
+ *     summary: Fetch all tasks for the authenticated user with optional filters
  *     tags: [Tasks]
  *     security:
  *       - bearerAuth: [] 
+ *     parameters:
+ *       - name: priority
+ *         in: query
+ *         required: false
+ *         description: Filter tasks by priority
+ *         schema:
+ *           type: integer
+ *       - name: completed
+ *         in: query
+ *         required: false
+ *         description: Filter tasks by completion status
+ *         schema:
+ *           type: boolean
+ *       - name: search
+ *         in: query
+ *         required: false
+ *         description: Search tasks by task description or userId
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
  *         description: Successfully fetched all tasks
@@ -80,6 +99,8 @@ router.post("/newTask", authenticateToken, TaskControllers.createTask);
  *                         example: false
  *       401:
  *         description: Unauthorized access
+ *       400:
+ *         description: User ID does not exist
  *       500:
  *         description: Server error
  */
