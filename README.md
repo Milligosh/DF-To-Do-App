@@ -104,11 +104,16 @@ This is a RESTful API for a To-Do application built with TypeScript, Express, an
   - 201: Task created successfully
   - 400: userId does not exist
 
-#### Fetch All Tasks
+##### Fetch All Tasks
 - **GET** `/tasks/allTasks`
+- **Query Parameters** (optional):
+  - `priority`: Filter tasks by priority (integer)
+  - `completed`: Filter tasks by completion status (boolean)
+  - `search`: Search tasks by task description or userId (string)
 - **Responses**:
   - 200: Successfully fetched all tasks
   - 401: Unauthorized access
+  - 400: User ID does not exist
 
 #### Delete a Task
 - **DELETE** `/tasks/deleteTask/{id}`
@@ -131,4 +136,4 @@ This is a RESTful API for a To-Do application built with TypeScript, Express, an
   - 400: Invalid task ID or user does not have permission to update
 
 ## Swagger Documentation
-The API is documented using Swagger. You can access the documentation at:
+The API is documented using Swagger. You can access the documentation at:http://localhost:6000/api-docs
