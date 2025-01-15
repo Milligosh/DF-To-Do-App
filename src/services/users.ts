@@ -4,6 +4,7 @@ import { UserQueries } from "../queries/users";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import  config from '../config/env/development'
+import { createResponseObject } from "../helpers/response";
 export default interface User{
     id: string;
     firstname: string;
@@ -23,25 +24,11 @@ export class UserServices{
     const usernameExist =(await pool.query(UserQueries.checkUsernameExistence,[username])).rows[0]
     
     if (usernameExist){
-        return{
-            
-                code: 409,
-                message: "User Name already exists",
-                data: null,
-                status: "error",
-              
-        }
+        return createResponseObject('error', 409, `Username already exists`,null);
     }
     const emailExist=(await pool.query(UserQueries.checkEmailExistence,[email])).rows[0]
     if (emailExist){
-        return{
-            
-                code: 409,
-                message: "email already exists",
-                data: null,
-                status: "error",
-              
-        }
+        return createResponseObject('error', 409, `email already exists`,null);
     }
     const saltRounds= 12
     const hashPassword = bcrypt.hashSync(password,saltRounds)
@@ -54,14 +41,7 @@ export class UserServices{
         hashPassword,
         phonenumber,]))
         
-        return{
-        code: 201,
-      status: "success",
-      message: "New user added successfully",
-      data: response.rows[0],
-    };
-    
-    
+        return createResponseObject('success', 201, `Account created successfully`,response.rows[0]);  
 }
 static async login(body:any):Promise<any>{
 const {email,password}=body
@@ -69,12 +49,7 @@ const {email,password}=body
 const checkExistence=(await pool.query(UserQueries.checkEmailExistence,[email])).rows[0]
 
 if(!checkExistence){
-    return{
-        code: 409,
-      status: "error",
-      message: "User does not exist",
-      data: null,
-    }
+    return createResponseObject('error', 409, `user does not exist`,null);  
 }
 const {password: databasePassword,
     firstname,
@@ -86,10 +61,7 @@ const {password: databasePassword,
     const comparePassword= bcrypt.compareSync(password,databasePassword)
 
     if(!comparePassword){
-        return{code: 409,
-            status: "error",
-            message: "Wrong log-In credentials",
-            data: null,}
+        return createResponseObject('error', 409, `Wrong logIn credentials`,null);  
     }
     const options={
         "expiresIn":"1d"
@@ -102,21 +74,14 @@ const {password: databasePassword,
         lastname,
         created_at
 },config.JWT_SECRET as string,options)
-
-return{
-    status: "success",
-      message: "User login successfully",
-      code: 200,
-      data: {
-        id,
-        firstname,
-        lastname,
-        username,
-        email,
-        token,
-        created_at,
-      },
-    
-}
+return createResponseObject('success', 200, `User loggedIn successfully`,{
+    id,
+    firstname,
+    lastname,
+    username,
+    email,
+    token,
+    created_at,
+  },);  
 }
 }

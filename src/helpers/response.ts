@@ -1,32 +1,26 @@
-
-
 import { Response } from 'express';
 
-function responseProvider(res: Response, data: any, message: string, code: number): Response {
-    return res.status(code).json({ message, data });
+function sendResponse(res: Response, status: 'success' | 'error', code: number, message: string, data: any = null): Response {
+    return res.status(code).json({ status, code, message, data });
 }
 
 interface ResponseObject {
-    status: 'success' | 'failure';
+    status: 'success' | 'error';
     code: number;
     message: string;
     data: any;
 }
 
-function provideResponse(status: 'success' | 'failure', code: number, message: string, data: any): ResponseObject {
+function createResponseObject(status: 'success' | 'error', code: number, message: string, data: any = null): ResponseObject {
     return {
-        status: status,
-        code: code,
-        message: message,
-        data: data
+        status,
+        code,
+        message,
+        data
     };
 }
 
-  
-  
-  
-  
-  module.exports={
-    responseProvider,
-    provideResponse,
-  }
+export {
+    sendResponse,
+    createResponseObject
+};

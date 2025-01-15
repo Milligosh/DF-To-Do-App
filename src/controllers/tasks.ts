@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { TaskServices } from "../services/tasks";
+import { sendResponse } from "../helpers/response";
 
 export class TaskControllers {
   static async createTask(
@@ -14,7 +15,7 @@ export class TaskControllers {
         userId: (req as any)?.user?.id,
       });
       console.log(result);
-      return res.status(result.code).json(result);
+      sendResponse(res, result.status, result.code, result.message, result.data);
     } catch (error) {
       next(error);
     }
@@ -30,7 +31,7 @@ export class TaskControllers {
       const filters = req.query;
       const result = await TaskServices.fetchTaskByUser(userId,filters);
       console.log(result);
-      return res.status(result.code).json(result);
+      sendResponse(res, result.status, result.code, result.message, result.data);
     } catch (error) {
       next(error);
     }
@@ -45,7 +46,7 @@ export class TaskControllers {
         const userId= (req as any)?.user?.id;
         console.log(id,userId)
         const result = await TaskServices.deleteTask(id,userId);
-        return res.status(result.code).json(result)
+        sendResponse(res, result.status, result.code, result.message, result.data);
     } catch (error) {
         next(error)
     }
@@ -62,7 +63,7 @@ export class TaskControllers {
 
         
         const result = await TaskServices.updateTask(id, userId, req.body);
-        return res.status(result.code).json(result);
+        sendResponse(res, result.status, result.code, result.message, result.data);
     } catch (error) {
         next(error);
     }
