@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { sendResponse } from '../helpers/response';
 
 /**
  * Error response middleware for 404 not found.
@@ -7,10 +8,7 @@ import { Request, Response, NextFunction } from 'express';
  * @param {Response} res
  */
 export function notFound(req: Request, res: Response): void {
-    res.status(404).json({
-        code: 404,
-        message: 'Ooops, route not found'
-    });
+    sendResponse(res, 'error', 404, 'Ooops, route not found');
 }
 
 /**
@@ -31,10 +29,7 @@ export function appErrorHandler(err: Error, req: Request, res: Response, next: N
             IP - ${req.ip}
         `);
 
-        res.status((err as any).code).json({
-            code: (err as any).code,
-            message: err.message
-        });
+        sendResponse(res, 'error', (err as any).code, err.message);
     } else {
         next(err);
     }
@@ -57,9 +52,5 @@ export function genericErrorHandler(err: Error, req: Request, res: Response, nex
         IP - ${req.ip}
     `);
 
-    res.status(500).json({
-        code: 500,
-        data: '',
-        message: err.message
-    });
+    sendResponse(res, 'error', 500, err.message);
 }

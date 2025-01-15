@@ -1,6 +1,7 @@
 import express from 'express'
 import { UserControllers } from '../controllers/users'
-import { validateSignUpApplicantInput } from '../middlewares/validation'
+import { validateSignUpApplicantInput } from '../middlewares/validate.signup'
+
 
 const router = express.Router()
 
